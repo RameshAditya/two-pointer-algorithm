@@ -80,42 +80,36 @@ code for the fourth algo challenge
 number of substrings of less than K unique alphabets that each index is part of
 
 Algo:
-- Same as second, find the largest substring from each index
-- Now each of these elements must be included in each others answers
-- Equivalent to multiple range sum updates
-- Use difference arrays
+- Similar to the second challenge, find the largest valid substring to the right of each index
+- Also, find the largest valid substring to the left of each index
+- Add them up and subtract one from each element (to remove the common substring of size 1, ie the letter itself)
 - Profit
 '''
 def fourth(s, k):
-    n = len(s)
-    ans = [0 for i in range(n)]
-    hsh = [0 for i in range(26)]
-    ct = 0
-    i = 0
-    j = 0
-    for i in range(n):
-        while j < n and ct<=k:
-            if hsh[ord(s[j]) - ord('a')] == 0 and ct==k:
-                break
-            else:
-                hsh[ord(s[j]) - ord('a')] += 1
-                if hsh[ord(s[j]) - ord('a')] == 1:
-                    ct += 1
-            j+=1
-        ans[i] = j-i
-        hsh[ord(s[i]) - ord('a')] -= 1
-        if hsh[ord(s[i]) - ord('a')] == 0:
-            ct -= 1
-
-    diff = [0 for i in range(n+1)]
-    for i in range(n):
-        diff[i] += 1
-        diff[i+ans[i]]-=1
-    for i in range(1, n+1):
-        diff[i] += diff[i-1]
-    return diff[:-1]
-    # diff[i] now stores how many substrings of <= k unique chars
-    # that s[i] is a part of
-
-
+    def do(s, k):
+        n = len(s)
+        ans = [0 for i in range(n)]
+        hsh = [0 for i in range(26)]
+        ct = 0
+        i = 0
+        j = 0
+        for i in range(n):
+            while j < n and ct<=k:
+                if hsh[ord(s[j]) - ord('a')] == 0 and ct==k:
+                    break
+                else:
+                    hsh[ord(s[j]) - ord('a')] += 1
+                    if hsh[ord(s[j]) - ord('a')] == 1:
+                        ct += 1
+                j+=1
+            ans[i] = j-i
+            hsh[ord(s[i]) - ord('a')] -= 1
+            if hsh[ord(s[i]) - ord('a')] == 0:
+                ct -= 1
+        return ans
+    right = do(s, k)
+    left = do(s[::-1], k)
+    left = left[::-1]
+    print(left, right)
+    return [right[i] + left[i] - 1 for i in range(len(s))]
         
